@@ -1,0 +1,21 @@
+{
+  "name": "deploy-goon",
+  "version": "0.0.1-SNAPSHOT",
+  "description": "A tool to make configuring deploy triggers easy.",
+  "keywords": "deploy-goon deploy goon",
+  "homepage": "https://github.com/hacklanta/deploy-goon",
+  "bugs": {
+    "url": "https://github.com/hacklanta/deploy-goon/issues"
+  },
+  "license": "Apache 2",
+  "author": {
+    "name": "Matt Farmer",
+    "email": "matt@frmr.me",
+    "url": "http://farmdawgnation.com"
+  },
+  "files": ["src"],
+  "bin": "./src/deploy-goon.js",
+  "engines": {
+    "node": "0.10.x"
+  }
+}
