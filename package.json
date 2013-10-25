@@ -15,7 +15,7 @@
   },
   "files": ["src"],
   "bin": {
-    "deploygoon": "./src/deploy-goon-cli.js"
+    "deploygoon": "./src/cli.js"
   },
   "engines": {
     "node": "0.10.x"
