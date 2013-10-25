@@ -20,4 +20,4 @@ function ifValidCommand(command) {
     return undefined;
 }
 
-acceptedCommands[command].callback();
+acceptedCommands[command].callback(arguments);
