@@ -4,28 +4,26 @@
  * See LICENSE in project root for more details.
 **/
 
-var DeployJob = require('./deploy-job');
+var DeployJob = require('./deploy-job'),
+    fs = require('fs');
 
 var DeployGoonConfiguration = (function() {
-  var configuredProjects = {};
+  var configuredProjects = {},
+      configurationFiles = [];
 
   function DeployGoonConfiguration() {
-    // TODO: Determine where all the deploygoon.json files are located
-    // on the file system, read them into the DeployJob constructor, then
-    // associate them to their slug in configured projects.
+    if (! fs.existsSync("deploygoonfiles.config"))
+      fs.writeFileSync("deploygoonfiles.config", "");
 
-    configuredProjects["bacon"] = new DeployJob({
-      slug: "bacon",
-      ipWhitelist: ["127.0.0.1"],
-      deployActions: [
-        "echo ohaithar",
-        "echo can i haz bacon",
-        "echo mmkay"
-      ],
-      notifictionSettings: {
-        notify: "always",
-        email: "matt@sauce.com"
-      }
+    configurationFiles = fs.readFileSync("deploygoonfiles.config", {encoding: 'utf8'}).split("\n");
+
+    configurationFiles.forEach(function(configurationFile) {
+      if (configurationFile == "")
+        return;
+
+      var configurationJson = JSON.parse(fs.readFileSync(configurationFile, {encoding: 'utf8'}));
+
+      configuredProjects[configurationJson.slug] = new DeployJob(configurationJson);
     });
   }
 
