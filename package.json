@@ -14,7 +14,9 @@
     "url": "http://farmdawgnation.com"
   },
   "files": ["src"],
-  "bin": "./src/deploy-goon.js",
+  "bin": {
+    "deploygoon": "./src/deploy-goon-cli.js"
+  },
   "engines": {
     "node": "0.10.x"
   }
