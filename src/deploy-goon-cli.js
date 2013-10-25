@@ -9,57 +9,15 @@
 
 process.title = "deploygoon";
 
-var acceptedCommands = {
-      add: {
-        helpfulName: "deploygoon add path/to/deploygoon.json",
-        description: "Add a project to deploy goon.",
-        callback: function() {}
-      },
-      remove: {
-        helpfulName: "deploygoon remove project-slug",
-        description: "Remove a project from deploy goon.",
-        callback: function() {}
-      },
-      ls: {
-        helpfulName: "deploygoon ls",
-        description: "List all projects deploy goon knows about.",
-        callback: function() {}
-      },
-      start: {
-        helpfulName: "deploygoon start",
-        description: "Start the deploy goon daemon.",
-        callback: function() {}
-      },
-      stop: {
-        helpfulName: "deploygoon stop",
-        description: "Stop the deploy goon daemon.",
-        callback: function() {}
-      },
-      usage: {
-        helpfulName: "deploygoon usage",
-        description: "Display this usage information.",
-        callback: usageCommand
-      }
-    },
-    arguments = process.argv,
+var acceptedCommands = require('./cli/accepted-commands'),
+    arguments = process.argv.slice(2),
     command = ifValidCommand(arguments.shift()) || "usage";
 
 function ifValidCommand(command) {
   if (acceptedCommands.hasOwnProperty(command))
-    command
+    return command;
   else
-    undefined
-}
-
-function usageCommand() {
-  console.log("deploygoon -- A goon for deployment.");
-  console.log("");
-
-  for (command in acceptedCommands) {
-    console.log(acceptedCommands[command].helpfulName);
-    console.log("\t" + acceptedCommands[command].description);
-    console.log("");
-  }
+    return undefined;
 }
 
 acceptedCommands[command].callback();
