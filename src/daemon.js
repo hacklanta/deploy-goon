@@ -7,15 +7,18 @@
 **/
 var http = require('http'),
     url = require('url'),
-    spawn = require('child_process').spawn,
     fs = require('fs'),
-    DeployHelpers = require('./util/deploy-helpers'),
-    DeployJob = require('./util/deploy-job');
+    DeployGoonConfiguration = require('./util/deploy-goon-configuration'),
+    configuration = new DeployGoonConfiguration();
 
 http.createServer(function(req, res) {
-  if (url.parse(req.url).pathname == "/bacon") {
+  var job = configuration.getJob(url.parse(req.url).pathname.substr(1));
+
+  if (job) {
     res.writeHead(200);
     res.end();
+
+    job.executeDeployment();
   } else {
     res.writeHead(404);
     res.end();

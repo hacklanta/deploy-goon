@@ -3,6 +3,8 @@
  * ©2013 Matt Farmer – Licensed under Apache 2 License
  * See LICENSE in project root for more details.
 **/
+var spawn = require('child_process').spawn;
+
 var DeployHelpers = {
   executeCommand: function(scriptCommand, callback) {
     var scriptHandle = spawn(scriptCommand);
@@ -13,6 +15,10 @@ var DeployHelpers = {
 
     scriptHandle.stderr.on('data', function(data) {
       process.stderr.write(data);
+    });
+
+    scriptHandle.on('error', function(error) {
+      console.log(error);
     });
 
     scriptHandle.on('close', function(code) {

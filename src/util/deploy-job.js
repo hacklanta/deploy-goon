@@ -17,6 +17,8 @@
  *   notify: [always|failure|off]
  *   email: An email address to notify with the deploy log.
 **/
+var DeployHelpers = require('./deploy-helpers');
+
 var DeployJob = (function() {
   var slug, ipWhitelist, deployActions, notificationSettings;
 
@@ -56,7 +58,7 @@ var DeployJob = (function() {
       };
     }
 
-    DeployHelpers.executeCommand(deployActions[0], deploycommandCallback(0));
+    DeployHelpers.executeCommand(deployActions[0], deployCommandCallback(0));
   }
 
   return DeployJob;
