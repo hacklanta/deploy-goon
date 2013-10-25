@@ -20,7 +20,8 @@
 var DeployHelpers = require('./deploy-helpers');
 
 var DeployJob = (function() {
-  var slug, ipWhitelist, deployActions, notificationSettings;
+  var slug, ipWhitelist, deployActions, notificationSettings,
+      executing = false;
 
   function DeployJob(configuration) {
     configuration = configuration || {}
@@ -40,6 +41,13 @@ var DeployJob = (function() {
   }
 
   DeployJob.prototype.executeDeployment = function() {
+    if (executing) {
+      console.warn("Deployment of " + slug + " is already in progress.");
+      return;
+    }
+
+    executing = true;
+
     var deployCommandCount = deployActions.length,
         deployCommandCallback;
 
@@ -50,11 +58,15 @@ var DeployJob = (function() {
             deployActions[deployCommandIndex + 1],
             deploycommandCallback(deploycommandIndex + 1)
           );
+
+          return;
         } else if (success) {
           console.log("Deployment of " + slug + " is finished.");
         } else {
           console.error("Deployment of " + slug + " failed.");
         }
+
+        executing = false;
       };
     }
 
