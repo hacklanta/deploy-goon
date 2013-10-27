@@ -67,6 +67,14 @@ var DeployGoonConfiguration = (function() {
     }
   }
 
+  DeployGoonConfiguration.prototype.getJobs = function() {
+    return configuredProjects;
+  }
+
+  DeployGoonConfiguration.prototype.getJobFilePaths = function() {
+    return configurationFilePaths;
+  }
+
   return DeployGoonConfiguration;
 })();
 
