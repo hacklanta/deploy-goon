@@ -11,6 +11,8 @@ var http = require('http'),
     DeployGoonConfiguration = require('./util/deploy-goon-configuration'),
     configuration = new DeployGoonConfiguration();
 
+configuration.watchConfiguration();
+
 http.createServer(function(req, res) {
   var job = configuration.getJob(url.parse(req.url).pathname.substr(1));
 
