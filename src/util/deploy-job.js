@@ -12,7 +12,11 @@
  *
  * slug: The slug name of the project.
  * ipWhitelist: An array of valid IPs that can request against this slug.
- * deployActions: An array of commands to execute during deployment.
+ * deployActions: An array of action descriptors to execute, where action descriptors are:
+ *   An object containing the following:
+ *     name: A human readable name.
+ *     command: The command.
+ *     arguments: Arguments to pass to the command.
  * notificationSettings:
  *   notify: [always|failure|off]
  *   email: An email address to notify with the deploy log.

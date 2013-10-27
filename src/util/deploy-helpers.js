@@ -6,8 +6,8 @@
 var spawn = require('child_process').spawn;
 
 var DeployHelpers = {
-  executeCommand: function(scriptCommand, callback) {
-    var scriptHandle = spawn(scriptCommand);
+  executeCommand: function(actionDescriptor, callback) {
+    var scriptHandle = spawn(actionDescriptor.command, actionDescriptor.arguments, {env: process.env});
 
     scriptHandle.stdout.on('data', function(data) {
       process.stdout.write(data);
@@ -23,11 +23,11 @@ var DeployHelpers = {
 
     scriptHandle.on('close', function(code) {
       if (code !== 0) {
-        console.log(scriptCommand + " was unsuccessful. Aborting.");
+        console.log(actionDescriptor.name + " was unsuccessful. Aborting.");
 
         if (typeof callback != 'undefined') callback(false);
       } else {
-        console.log(scriptCommand + " complete.");
+        console.log(actionDescriptor.name + " complete.");
 
         if (typeof callback != 'undefined') callback(true);
       }
