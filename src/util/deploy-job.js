@@ -24,20 +24,25 @@
 var DeployHelpers = require('./deploy-helpers');
 
 var DeployJob = (function() {
-  var slug, ipWhitelist, deployActions, notificationSettings,
+  var slug, description, ipWhitelist, deployActions, notificationSettings,
       executing = false;
 
   function DeployJob(configuration) {
     configuration = configuration || {}
 
-    slug = configuration.slug
-    ipWhitelist = configuration.ipWhitelist
-    deployActions = configuration.deployActions
-    notificationSettings = configuration.notificationSettings || {}
+    slug = configuration.slug;
+    description = configuration.description;
+    ipWhitelist = configuration.ipWhitelist;
+    deployActions = configuration.deployActions;
+    notificationSettings = configuration.notificationSettings || {};
   }
 
   DeployJob.prototype.getSlug = function() {
     return slug;
+  }
+
+  DeployJob.prototype.getDescription = function() {
+    return description;
   }
 
   DeployJob.prototype.isIpWhitelisted = function(ipAddress) {
