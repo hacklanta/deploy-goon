@@ -13,6 +13,12 @@ var http = require('http'),
 
 configuration.watchConfiguration();
 
+process.on("SIGUSR2", function() {
+  console.log("Got a USR2 signal. Reloading all configuration from scratch.");
+  configuration = new DeployGoonConfiguration();
+  console.log("Configuration reload completed.");
+});
+
 http.createServer(function(req, res) {
   var job = configuration.getJob(url.parse(req.url).pathname.substr(1));
 
