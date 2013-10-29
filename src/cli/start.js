@@ -5,9 +5,11 @@
 **/
 module.exports = function(arguments) {
   var spawn = require("child_process").spawn,
-      child = spawn("src/daemon", [], {
+      fs = require("fs"),
+      logfile = fs.openSync("/var/log/deploygoon.log", "a"),
+      child = spawn("node", ["src/daemon.js"], {
        detached: true,
-       stdio: [ 'ignore', 'ignore', 'ignore' ]
+       stdio: [ 'ignore', logfile, logfile]
       });
 
   child.unref();
