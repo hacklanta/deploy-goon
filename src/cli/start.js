@@ -4,5 +4,11 @@
  * See LICENSE in project root for more details.
 **/
 module.exports = function(arguments) {
-  console.log("Hi, I'm the start command.");
+  var spawn = require("child_process").spawn,
+      child = spawn("src/daemon", [], {
+       detached: true,
+       stdio: [ 'ignore', 'ignore', 'ignore' ]
+      });
+
+  child.unref();
 }
