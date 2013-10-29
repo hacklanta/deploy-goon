@@ -11,7 +11,34 @@ var http = require('http'),
     DeployGoonConfiguration = require('./util/deploy-goon-configuration'),
     configuration = new DeployGoonConfiguration();
 
+try {
+  var existingPid = fs.readFileSync("/var/run/deploygoon-daemon.pid", {charset: 'utf8'});
+
+  console.error("It looks like there's already an instance of deploy goon running (PID " + existingPid + ")");
+  console.error("Please check to see if it's active. If not, delete /var/run/deploygoon-daemon.pid and try again.");
+  process.exit(1);
+} catch(error) {
+  if (error.code == "ENOENT") {
+    try {
+      fs.writeFileSync("/var/run/deploygoon-daemon.pid", process.pid);
+    } catch (writeError) {
+      console.error("Couldn't write pidfile. Please ensure you're running the daemon as root.");
+      process.exit(1);
+    }
+  } else {
+    console.error(error.toString());
+    process.exit(1);
+  }
+}
+
+process.title = "deploygoon-daemon";
+
 configuration.watchConfiguration();
+
+process.on("SIGINT", function() {
+  fs.unlinkSync("/var/run/deploygoon-daemon.pid");
+  process.exit(0);
+});
 
 process.on("SIGUSR2", function() {
   console.log("Got a USR2 signal. Reloading all configuration from scratch.");
