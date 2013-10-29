@@ -75,6 +75,39 @@ var DeployGoonConfiguration = (function() {
     return configurationFilePaths;
   }
 
+  DeployGoonConfiguration.prototype.addJob = function(filename) {
+    filename = fs.realpathSync(filename);
+
+    for (slug in configurationFilePaths) {
+      if (configurationFilePaths[slug] == filename) {
+        console.error("That file is already configured.");
+        return;
+      }
+    }
+
+    var configuration = loadConfigurationJsonFromFile(filename);
+
+    if (configuredProjects[configuration.slug] !== undefined) {
+      console.error("That configuration uses a slug that is in use by another project.");
+      return;
+    }
+
+    configuredProjects[configuration.slug] = configuration;
+    configurationFilePaths[configuration.slug] = filename;
+  }
+
+  DeployGoonConfiguration.prototype.save = function() {
+    var filenames = [];
+
+    for (slug in configurationFilePaths) {
+      filenames.push(configurationFilePaths[slug]);
+    }
+
+    var deployGoonConfigurationContents = filenames.join("\n");
+
+    fs.writeFileSync("deploygoonfiles.config", deployGoonConfigurationContents);
+  }
+
   return DeployGoonConfiguration;
 })();
 

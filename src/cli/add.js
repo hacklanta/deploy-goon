@@ -4,8 +4,10 @@
  * See LICENSE in project root for more details.
 **/
 module.exports = function(arguments) {
-  var fs = require('fs'),
-      filePath = arguments[0];
+  var filePath = arguments[0],
+      fs = require("fs"),
+      DeployGoonConfiguration = require("../util/deploy-goon-configuration"),
+      configuration = new DeployGoonConfiguration();
 
   if (filePath === undefined) {
     console.error("You are required to provide a valid file path to the add command.");
@@ -25,5 +27,6 @@ module.exports = function(arguments) {
     return;
   }
 
-  fs.appendFileSync("deploygoonfiles.config", "\n" + filePath);
+  configuration.addJob(filePath);
+  configuration.save();
 }
