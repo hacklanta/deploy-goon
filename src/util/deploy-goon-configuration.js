@@ -96,6 +96,16 @@ var DeployGoonConfiguration = (function() {
     configurationFilePaths[configuration.slug] = filename;
   }
 
+  DeployGoonConfiguration.prototype.removeJob = function(slug) {
+    if (configuredProjects[slug] === undefined) {
+      console.error("That project doesn't exist.");
+      return;
+    }
+
+    delete configuredProjects[slug];
+    delete configurationFilePaths[slug];
+  }
+
   DeployGoonConfiguration.prototype.save = function() {
     var filenames = [];
 
