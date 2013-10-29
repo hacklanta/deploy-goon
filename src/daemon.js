@@ -31,14 +31,18 @@ try {
   }
 }
 
+function unlinkPidfile() {
+  fs.unlinkSync("/var/run/deploygoon-daemon.pid");
+  process.exit(0);
+}
+
+process.on("SIGINT", unlinkPidfile);
+process.on("SIGTERM", unlinkPidfile);
+process.on("SIGQUIT", unlinkPidfile);
+
 process.title = "deploygoon-daemon";
 
 configuration.watchConfiguration();
-
-process.on("SIGINT", function() {
-  fs.unlinkSync("/var/run/deploygoon-daemon.pid");
-  process.exit(0);
-});
 
 process.on("SIGUSR2", function() {
   console.log("Got a USR2 signal. Reloading all configuration from scratch.");
