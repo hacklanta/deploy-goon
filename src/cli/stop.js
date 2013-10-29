@@ -4,5 +4,8 @@
  * See LICENSE in project root for more details.
 **/
 module.exports = function(arguments) {
-  console.log("Hi, I'm the stop command.");
+  var fs = require("fs"),
+      pid = fs.readFileSync("/var/run/deploygoon-daemon.pid", {charset: 'utf8'});
+
+  process.kill(pid);
 }
