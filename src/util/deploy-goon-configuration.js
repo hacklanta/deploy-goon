@@ -9,17 +9,18 @@ var DeployJob = require('./deploy-job'),
 
 var DeployGoonConfiguration = (function() {
   var configuredProjects = {},
-      configurationFilePaths = {};
+      configurationFilePaths = {},
+      deploygoonConfigFile = "/etc/deploygoon.config";
 
   function loadConfigurationJsonFromFile(configurationFile) {
     return JSON.parse(fs.readFileSync(configurationFile, {encoding: 'utf8'}));
   }
 
   function DeployGoonConfiguration() {
-    if (! fs.existsSync("deploygoonfiles.config"))
-      fs.writeFileSync("deploygoonfiles.config", "");
+    if (! fs.existsSync(deploygoonConfigFile))
+      fs.writeFileSync(deploygoonConfigFile, "");
 
-    var configurationFiles = fs.readFileSync("deploygoonfiles.config", {encoding: 'utf8'}).split("\n");
+    var configurationFiles = fs.readFileSync(deploygoonConfigFile, {encoding: 'utf8'}).split("\n");
 
     configurationFiles.forEach(function(configurationFile) {
       if (configurationFile == "")
@@ -115,7 +116,7 @@ var DeployGoonConfiguration = (function() {
 
     var deployGoonConfigurationContents = filenames.join("\n");
 
-    fs.writeFileSync("deploygoonfiles.config", deployGoonConfigurationContents);
+    fs.writeFileSync(deploygoonConfigFile, deployGoonConfigurationContents);
   }
 
   return DeployGoonConfiguration;
