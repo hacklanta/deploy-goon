@@ -77,7 +77,7 @@ Assuming nothing went wrong, you should now have Deploy Goon running on port 909
 deploy you described above by going sending an HTTP request to http://localhost:9090/my-job like so:
 
 ```
-curl http://localhost:9090/my-job
+$ curl http://localhost:9090/my-job
 ```
 
 Output from the deploy job will be displayed in Deploy Goon's logfile located at `/var/log/deploygoon.log`.
