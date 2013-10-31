@@ -19,5 +19,11 @@
   },
   "engines": {
     "node": "0.10.x"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha -u tdd -R spec --recursive --timeout 2000"
   }
 }
