@@ -65,7 +65,7 @@ var DeployJob = (function() {
         if (success && deployCommandIndex < deployCommandCount - 1) {
           DeployHelpers.executeCommand(
             deployActions[deployCommandIndex + 1],
-            deploycommandCallback(deploycommandIndex + 1)
+            deploycommandCallback(deployCommandIndex + 1)
           );
 
           return;
