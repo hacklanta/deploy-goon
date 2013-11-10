@@ -7,7 +7,15 @@ var spawn = require('child_process').spawn;
 
 var DeployHelpers = {
   executeCommand: function(actionDescriptor, callback) {
-    var scriptHandle = spawn(actionDescriptor.command, actionDescriptor.arguments, {env: process.env});
+    var spawnOptions = {end: process.env};
+
+    if (actionDescriptor.uid)
+      spawnOptions["uid"] = actionDescriptor.uid;
+
+    if (actionDescriptor.gid)
+      spawnOptions["gid"] = actionDescriptor.gid;
+
+    var scriptHandle = spawn(actionDescriptor.command, actionDescriptor.arguments, spawnOptions);
 
     scriptHandle.stdout.on('data', function(data) {
       process.stdout.write(data);
