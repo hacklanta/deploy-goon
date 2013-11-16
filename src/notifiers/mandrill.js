@@ -8,7 +8,13 @@
  * The Mandrill Notifier.
  *
  * Uses the Mandrill API package to send a really simple email regarding the status
- * of your deployment.
+ * of your deployment. This notifier requires the following settings to be specified.
+ *
+ * * apiKey - Your Mandrill API Key.
+ * * fromEmail - The email the message will come from.
+ * * fromName - The name the email will come from.
+ * * toEmail - The email the message will go to.
+ * * toName - The name the email will go to.
 **/
 module.exports = (function() {
   var Mandrill = require('mandrill-api').Mandrill;
