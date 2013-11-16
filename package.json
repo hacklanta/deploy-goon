@@ -20,6 +20,9 @@
   "engines": {
     "node": "0.10.x"
   },
+  "dependencies" : {
+    "mandrill-api": ">=1.0.2"
+  },
   "devDependencies": {
     "mocha": "*"
   },
