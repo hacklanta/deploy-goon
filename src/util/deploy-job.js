@@ -24,61 +24,58 @@
 var DeployHelpers = require('./deploy-helpers');
 
 var DeployJob = (function() {
-  var slug, description, ipWhitelist, deployActions, notifications,
-      trustProxy,
-      executing = false;
-
   function DeployJob(configuration) {
     configuration = configuration || {}
 
-    slug = configuration.slug;
-    description = configuration.description;
-    ipWhitelist = configuration.ipWhitelist;
-    trustProxy = configuration.trustProxy;
-    deployActions = configuration.deployActions;
-    notifications = configuration.notifications || {};
+    this.slug = configuration.slug;
+    this.description = configuration.description;
+    this.ipWhitelist = configuration.ipWhitelist;
+    this.trustProxy = configuration.trustProxy;
+    this.deployActions = configuration.deployActions;
+    this.notifications = configuration.notifications || {};
+    this.executing = false;
   }
 
   DeployJob.prototype.getSlug = function() {
-    return slug;
+    return this.slug;
   }
 
   DeployJob.prototype.getDescription = function() {
-    return description;
+    return this.description;
   }
 
   DeployJob.prototype.isIpWhitelisted = function(ipAddress, xForwardedForIp) {
-    if (typeof ipWhitelist === 'undefined') {
+    if (typeof this.ipWhitelist === 'undefined') {
       // Whitelisting disabled.
       return true;
-    } else if (trustProxy && xForwardedForIp) {
-      return ipWhitelist.indexOf(xForwardedForIp) !== -1;
+    } else if (this.trustProxy && xForwardedForIp) {
+      return this.ipWhitelist.indexOf(xForwardedForIp) !== -1;
     } else {
-      return ipWhitelist.indexOf(ipAddress) !== -1;
+      return this.ipWhitelist.indexOf(ipAddress) !== -1;
     }
   }
 
   DeployJob.prototype.notify = function(success) {
-    if (typeof notifications.notifier !== 'undefined') {
-      var notifier = require("../notifiers/" + notifications.notifier + ".js");
+    if (typeof this.notifications.notifier !== 'undefined') {
+      var notifier = require("../notifiers/" + this.notifications.notifier + ".js");
 
-      if (success && notifications.onSuccess)
-        notifier.notifySuccess(notifications.settings, slug);
+      if (success && this.notifications.onSuccess)
+        notifier.notifySuccess(this.notifications.settings, this.slug);
 
       if (! success)
-        notifier.notifyFailure(notifications.settings, slug);
+        notifier.notifyFailure(this.notifications.settings, this.slug);
     }
   }
 
   DeployJob.prototype.executeDeployment = function() {
-    if (executing) {
+    if (this.executing) {
       console.warn("Deployment of " + slug + " is already in progress.");
       return;
     }
 
-    executing = true;
+    this.executing = true;
 
-    var deployCommandCount = deployActions.length,
+    var deployCommandCount = this.deployActions.length,
         deployCommandCallback,
         deployJob = this;
 
@@ -86,16 +83,16 @@ var DeployJob = (function() {
       return function(success) {
         if (success && deployCommandIndex < deployCommandCount - 1) {
           DeployHelpers.executeCommand(
-            deployActions[deployCommandIndex + 1],
+            deployJob.deployActions[deployCommandIndex + 1],
             deployCommandCallback(deployCommandIndex + 1)
           );
 
           return;
         } else if (success) {
-          console.log("Deployment of " + slug + " is finished.");
+          console.log("Deployment of " + deployJob.slug + " is finished.");
           deployJob.notify(true);
         } else {
-          console.error("Deployment of " + slug + " failed.");
+          console.error("Deployment of " + deployJob.slug + " failed.");
           deployJob.notify(false);
         }
 
@@ -103,7 +100,7 @@ var DeployJob = (function() {
       };
     }
 
-    DeployHelpers.executeCommand(deployActions[0], deployCommandCallback(0));
+    DeployHelpers.executeCommand(this.deployActions[0], deployCommandCallback(0));
   }
 
   return DeployJob;
