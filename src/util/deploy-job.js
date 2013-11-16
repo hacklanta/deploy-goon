@@ -46,7 +46,7 @@ var DeployJob = (function() {
   }
 
   DeployJob.prototype.isIpWhitelisted = function(ipAddress) {
-    ipWhitelist.indexOf(ipAddress) !== -1;
+    return ipWhitelist.indexOf(ipAddress) !== -1;
   }
 
   DeployJob.prototype.executeDeployment = function() {
