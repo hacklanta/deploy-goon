@@ -51,10 +51,8 @@ var DeployJob = (function() {
     if (typeof ipWhitelist === 'undefined') {
       // Whitelisting disabled.
       return true;
-
     } else if (trustProxy && xForwardedForIp) {
       return ipWhitelist.indexOf(xForwardedForIp) !== -1;
-
     } else {
       return ipWhitelist.indexOf(ipAddress) !== -1;
     }
