@@ -51,9 +51,14 @@ process.on("SIGUSR2", function() {
 });
 
 http.createServer(function(req, res) {
-  var job = configuration.getJob(url.parse(req.url).pathname.substr(1));
+  var job = configuration.getJob(url.parse(req.url).pathname.substr(1)),
+      forwardedForIpAddress = req.headers['x-forwarded-for'],
+      ipAddress = req.socket.address().address;
 
-  if (job && job.isIpWhitelisted(req.socket.address().address)) {
+  if (typeof forwardedForIpAddress == 'string')
+    forwardedForIpAddress = forwardedForIpAddress.split(",")[0]
+
+  if (job && job.isIpWhitelisted(ipAddress, forwardedForIpAddress)) {
     res.writeHead(200);
     res.end();
 
