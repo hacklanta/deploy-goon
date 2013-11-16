@@ -53,7 +53,7 @@ process.on("SIGUSR2", function() {
 http.createServer(function(req, res) {
   var job = configuration.getJob(url.parse(req.url).pathname.substr(1));
 
-  if (job) {
+  if (job && job.isIpWhitelisted(req.socket.address().address)) {
     res.writeHead(200);
     res.end();
 
