@@ -24,7 +24,7 @@
 var DeployHelpers = require('./deploy-helpers');
 
 var DeployJob = (function() {
-  var slug, description, ipWhitelist, deployActions, notificationSettings,
+  var slug, description, ipWhitelist, deployActions, notifications,
       trustProxy,
       executing = false;
 
@@ -36,7 +36,7 @@ var DeployJob = (function() {
     ipWhitelist = configuration.ipWhitelist;
     trustProxy = configuration.trustProxy;
     deployActions = configuration.deployActions;
-    notificationSettings = configuration.notificationSettings || {};
+    notifications = configuration.notifications || {};
   }
 
   DeployJob.prototype.getSlug = function() {
@@ -58,6 +58,18 @@ var DeployJob = (function() {
     }
   }
 
+  DeployJob.prototype.notify = function(success) {
+    if (typeof notifications.notifier !== 'undefined') {
+      var notifier = require("../notifiers/" + notifications.notifier + ".js");
+
+      if (success && notifications.onSuccess)
+        notifier.notifySuccess(notifications.settings, slug);
+
+      if (! success)
+        notifier.notifyFailure(notifications.settings, slug);
+    }
+  }
+
   DeployJob.prototype.executeDeployment = function() {
     if (executing) {
       console.warn("Deployment of " + slug + " is already in progress.");
@@ -67,7 +79,8 @@ var DeployJob = (function() {
     executing = true;
 
     var deployCommandCount = deployActions.length,
-        deployCommandCallback;
+        deployCommandCallback,
+        deployJob = this;
 
     deployCommandCallback = function(deployCommandIndex) {
       return function(success) {
@@ -80,8 +93,10 @@ var DeployJob = (function() {
           return;
         } else if (success) {
           console.log("Deployment of " + slug + " is finished.");
+          deployJob.notify(true);
         } else {
           console.error("Deployment of " + slug + " failed.");
+          deployJob.notify(false);
         }
 
         executing = false;
