@@ -25,6 +25,7 @@ var DeployHelpers = require('./deploy-helpers');
 
 var DeployJob = (function() {
   var slug, description, ipWhitelist, deployActions, notificationSettings,
+      trustProxy,
       executing = false;
 
   function DeployJob(configuration) {
@@ -33,6 +34,7 @@ var DeployJob = (function() {
     slug = configuration.slug;
     description = configuration.description;
     ipWhitelist = configuration.ipWhitelist;
+    trustProxy = configuration.trustProxy;
     deployActions = configuration.deployActions;
     notificationSettings = configuration.notificationSettings || {};
   }
@@ -45,8 +47,15 @@ var DeployJob = (function() {
     return description;
   }
 
-  DeployJob.prototype.isIpWhitelisted = function(ipAddress) {
-    ipWhitelist.indexOf(ipAddress) !== -1;
+  DeployJob.prototype.isIpWhitelisted = function(ipAddress, xForwardedForIp) {
+    if (typeof ipWhitelist === 'undefined') {
+      // Whitelisting disabled.
+      return true;
+    } else if (trustProxy && xForwardedForIp) {
+      return ipWhitelist.indexOf(xForwardedForIp) !== -1;
+    } else {
+      return ipWhitelist.indexOf(ipAddress) !== -1;
+    }
   }
 
   DeployJob.prototype.executeDeployment = function() {
