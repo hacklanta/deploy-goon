@@ -64,7 +64,7 @@ var DeployJob = (function() {
     if (typeof notifications.notifier !== 'undefined') {
       var notifier = require("../notifiers/" + notifications.notifier + ".js");
 
-      if (success)
+      if (success && notifications.onSuccess)
         notifier.notifySuccess(notifications.settings, slug);
 
       if (! success)
