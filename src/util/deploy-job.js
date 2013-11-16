@@ -24,7 +24,7 @@
 var DeployHelpers = require('./deploy-helpers');
 
 var DeployJob = (function() {
-  var slug, description, ipWhitelist, deployActions, notificationSettings,
+  var slug, description, ipWhitelist, deployActions, notifications,
       trustProxy,
       executing = false;
 
@@ -36,7 +36,7 @@ var DeployJob = (function() {
     ipWhitelist = configuration.ipWhitelist;
     trustProxy = configuration.trustProxy;
     deployActions = configuration.deployActions;
-    notificationSettings = configuration.notificationSettings || {};
+    notifications = configuration.notifications || {};
   }
 
   DeployJob.prototype.getSlug = function() {
@@ -51,10 +51,24 @@ var DeployJob = (function() {
     if (typeof ipWhitelist === 'undefined') {
       // Whitelisting disabled.
       return true;
+
     } else if (trustProxy && xForwardedForIp) {
       return ipWhitelist.indexOf(xForwardedForIp) !== -1;
+
     } else {
       return ipWhitelist.indexOf(ipAddress) !== -1;
+    }
+  }
+
+  DeployJob.prototype.notify = function(success) {
+    if (typeof notifications.notifier !== 'undefined') {
+      var notifier = require("../notifiers/" + notifications.notifier + ".js");
+
+      if (success)
+        notifier.notifySuccess(notifications.settings, slug);
+
+      if (! success)
+        notifier.notifyFailure(notifications.settings, slug);
     }
   }
 
@@ -67,7 +81,8 @@ var DeployJob = (function() {
     executing = true;
 
     var deployCommandCount = deployActions.length,
-        deployCommandCallback;
+        deployCommandCallback,
+        deployJob = this;
 
     deployCommandCallback = function(deployCommandIndex) {
       return function(success) {
@@ -80,8 +95,10 @@ var DeployJob = (function() {
           return;
         } else if (success) {
           console.log("Deployment of " + slug + " is finished.");
+          deployJob.notify(true);
         } else {
           console.error("Deployment of " + slug + " failed.");
+          deployJob.notify(false);
         }
 
         executing = false;
