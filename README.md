@@ -5,9 +5,8 @@ I was building out our continuous integration and deployment system, I wanted a 
 server without the server running Jenkins actually having SSH access to the production box. To accomplish that, I wrote a
 quick-and-dirty Node.js daemon that kicked off the deploy scripts when it received an HTTP request.
 
-Having determined that this process has worked well for us over the past few months, I started brainstorming how I could
-improve upon what essentially started as something of a hack. This brainstorming lead to the idea that it was time for
-this script to come into its own life as a project.
+After some iteration on the intial idea, I ended up with the specification for what is now Deploy Goon: a simple, but
+powerful, remote command execution daemon configurable with JSON files.
 
 ## Features
 
@@ -114,9 +113,10 @@ Output from the deploy job will be displayed in Deploy Goon's logfile located at
 Fair question. This is a task that's easily handled by doing some quick and dirty shell scripting, as I've obviously done.
 And this isn't my first time writing a script like this. I actually implemented a similar ruby-specific one called
 [unicorn-easy-restart](https://github.com/farmdawgnation/unicorn-easy-restart) awhile back. I decided I'm tired of re-inventing
-the wheel.
+the wheel. I figured other people were as well.
 
 ## Who is I?
 
-My name is **Matt Farmer**, and I'm a member of Hacklanta. I'm a code curator for a handful of people these days, not the least
-of which is [Anchor Tab](http://anchortab.com) where I serve as Lead Engineer and where the genesis of this project originates from.
+My name is **Matt Farmer**. I'm a software engineer hailing from Atlanta, GA. I'm a member of Hacklanta. I'm a code curator for
+a handful of people these days, not the least of which is [Anchor Tab](http://anchortab.com) where I serve as Lead Engineer. You
+can read my ramblings at [my blog](http://farmdawgnation.com) and on my [twitter account](http://twitter.com/farmdawgnation).
