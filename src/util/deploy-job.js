@@ -34,6 +34,12 @@ var DeployJob = (function() {
     this.deployActions = configuration.deployActions;
     this.notifications = configuration.notifications || {};
     this.executing = false;
+
+    if (typeof this.slug === 'undefined')
+      throw "A slug is required to define a deploy job.";
+
+    if (typeof this.deployActions === 'undefined' || this.deployActions.length == 0)
+      throw "At least one deploy action is required to define a deploy job.";
   }
 
   DeployJob.prototype.getSlug = function() {
