@@ -1,4 +1,4 @@
-# Deploy Goon
+# Deploy Goon [![Build Status](https://travis-ci.org/hacklanta/deploy-goon.png?branch=master)](https://travis-ci.org/hacklanta/deploy-goon)
 
 Deploy Goon is that was originally birthed from working on deployment procedures for [Anchor Tab](http://anchortab.com). When
 I was building out our continuous integration and deployment system, I wanted a way to trigger a release on the production
