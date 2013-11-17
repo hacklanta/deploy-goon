@@ -6,8 +6,9 @@
 var spawn = require('child_process').spawn;
 
 var DeployHelpers = {
-  executeCommand: function(actionDescriptor, callback) {
-    var spawnOptions = {end: process.env};
+  executeCommand: function(actionDescriptor, callback, options) {
+    var spawnOptions = {end: process.env},
+        options = options || {};
 
     if (actionDescriptor.uid)
       spawnOptions["uid"] = actionDescriptor.uid;
@@ -18,24 +19,29 @@ var DeployHelpers = {
     var scriptHandle = spawn(actionDescriptor.command, actionDescriptor.arguments, spawnOptions);
 
     scriptHandle.stdout.on('data', function(data) {
-      process.stdout.write(data);
+      if (! options.silenceOutput)
+        process.stdout.write(data);
     });
 
     scriptHandle.stderr.on('data', function(data) {
-      process.stderr.write(data);
+      if (! options.silenceOutput)
+        process.stderr.write(data);
     });
 
     scriptHandle.on('error', function(error) {
-      console.log(error);
+      if (! options.silenceOutput)
+        console.log(error);
     });
 
     scriptHandle.on('close', function(code) {
       if (code !== 0) {
-        console.log(actionDescriptor.name + " was unsuccessful. Aborting.");
+        if (! options.silenceOutput)
+          console.log(actionDescriptor.name + " was unsuccessful. Aborting.");
 
         if (typeof callback != 'undefined') callback(false);
       } else {
-        console.log(actionDescriptor.name + " complete.");
+        if (! options.silenceOutput)
+          console.log(actionDescriptor.name + " complete.");
 
         if (typeof callback != 'undefined') callback(true);
       }

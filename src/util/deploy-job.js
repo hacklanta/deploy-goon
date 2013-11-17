@@ -67,7 +67,7 @@ var DeployJob = (function() {
     }
   }
 
-  DeployJob.prototype.executeDeployment = function() {
+  DeployJob.prototype.executeDeployment = function(options) {
     if (this.executing) {
       console.warn("Deployment of " + slug + " is already in progress.");
       return;
@@ -77,30 +77,42 @@ var DeployJob = (function() {
 
     var deployCommandCount = this.deployActions.length,
         deployCommandCallback,
-        deployJob = this;
+        deployJob = this,
+        options = options || {},
+        afterAll = options.afterAll || function() {},
+        afterEach = options.afterEach || function() {};
 
     deployCommandCallback = function(deployCommandIndex) {
       return function(success) {
+        afterEach(success, deployJob.deployActions[deployCommandIndex]);
+
         if (success && deployCommandIndex < deployCommandCount - 1) {
           DeployHelpers.executeCommand(
             deployJob.deployActions[deployCommandIndex + 1],
-            deployCommandCallback(deployCommandIndex + 1)
+            deployCommandCallback(deployCommandIndex + 1),
+            options
           );
 
           return;
         } else if (success) {
-          console.log("Deployment of " + deployJob.slug + " is finished.");
+          if (! options.silenceOutput)
+            console.log("Deployment of " + deployJob.slug + " is finished.");
+
           deployJob.notify(true);
+          afterAll(true);
         } else {
-          console.error("Deployment of " + deployJob.slug + " failed.");
+          if (! options.silenceOutput)
+            console.error("Deployment of " + deployJob.slug + " failed.");
+
           deployJob.notify(false);
+          afterAll(false);
         }
 
         executing = false;
       };
     }
 
-    DeployHelpers.executeCommand(this.deployActions[0], deployCommandCallback(0));
+    DeployHelpers.executeCommand(this.deployActions[0], deployCommandCallback(0), options);
   }
 
   return DeployJob;
