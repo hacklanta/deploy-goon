@@ -1,0 +1,15 @@
+{
+  "slug": "example-job",
+  "description": "An example job.",
+  "ipWhitelist": ["127.0.0.1"],
+  "deployActions": [
+    {
+      "name": "Command 1",
+      "command": "whoami"
+    },
+    {
+      "name": "Command 2",
+      "command": "id"
+    }
+  ]
+}
