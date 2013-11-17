@@ -41,7 +41,15 @@ describe('DeployJob', function() {
       assert.equal(typeof exampleJob, "object");
     });
 
-    it('should return a helpful error if required fields are not specified');
+    it('should return a helpful error if required fields are not specified', function() {
+      assert.throws(function() {
+        new DeployJob();
+      }, "A slug is required to define a deploy job.");
+
+      assert.throws(function() {
+        new DeployJob({slug: "zztop"});
+      }, "At least one deploy action is required to define a deploy job.");
+    });
   });
 
   describe('#getSlug', function() {
