@@ -9,6 +9,16 @@ Having determined that this process has worked well for us over the past few mon
 improve upon what essentially started as something of a hack. This brainstorming lead to the idea that it was time for
 this script to come into its own life as a project.
 
+## Features
+
+* Capable of running any command, as any user.
+* IP whitelisting to prevent Joe the Hacker from executing your deploys.
+* Support for using X-Forwarded-For header as IP if proxy trust is enabled.
+* Easy-to-use CLI interface for managing which configuration files are used.
+* Automatically reloads deploy configurations when they change.
+* Stock support for basic notifications delivered via Mandrill email. If you have additional notification methods you'd
+like supported, open a PR!
+
 ## Installation
 
 To install Deploy Goon, you'll need to first install [Node.js](http://nodejs.org). You can find some excellent instructions
@@ -23,47 +33,64 @@ need to get started.
 
 ## Using Deploy Goon
 
-To use Deploy Goon, the first thing you'll need to do is write a deploy job configuration. Since Deploy Goon is written in
+It's time to write your first deploy job configuration. Since Deploy Goon is written in
 JavaScript, we define our deploy jobs in JSON. Here's an example:
 
 ```json
 {
-  "slug": "my-job",
-  "description": "Some human readable description.",
-  "ipWhitelist": ["127.0.0.1"],
+  "slug": "baconsauce",
+  "description": "An example deployment allowable from localhost.",
+  "ipWhitelist": ["192.168.1.1", "127.0.0.1"],
   "deployActions": [
     {
-      "name": "Build software.",
-      "command": "make",
-      "arguments": ""
-    },
-    {
-      "name": "Install software.",
-      "command": "make",
-      "arguments": "install"
+      "name": "Echo Lo",
+      "command": "whoami"
     }
   ],
-  "notificationSettings": {
-    "notify": "always",
-    "email": "buildnotifications@frmr.me"
+  "notifications": {
+    "notifier": "mandrill",
+    "onSuccess": false,
+    "settings": {
+      "apiKey": "zzzzz",
+      "fromEmail": "deploy@goon.com",
+      "fromName": "Deploy Goon",
+      "toEmail": "the@boss.com",
+      "toName": "The Boss"
+    }
   }
 }
 ```
 
-Not all of these options are *functional* yet (hence why our version number is less than 1.0), but hopefully you'll
-go ahead and get familiar with them anyway. Here's a brief outline of the available options.
+In the configuration above, when `http://localhost:9090/baconsauce` is hit from either `192.168.1.1` or `127.0.0.1`,
+the `whoami` command will be run. If it failed, we'll dispatch an email via Mandrill to "The Boss" letting him know.
+(Of course, "zzzzz" isn't a valid Mandrill API key, so you'll need to get one of those.)
 
-* **slug:** This should be a lowercase and hyphenated unique identifier for the project. Something suitable for
-  for usage in a URL because... it will be used in a URL.
-* **description:** Some human readable description of the project for display as output of the `deploygoon ls` command.
-* **ipWhitelist:** IPs allowed to trigger this deploy. (TODO)
-* **deployActions:** The steps of the deploy process.
-* **notificationSettings:** Settings for the notification emails in the resulting deploy. (TODO)
+Here are all the options we support in detail.
+
+* **slug** (string, required) – This should be a lowercase and hyphenated unique identifier for the project. Something suitable for
+  for usage in a URL because it will make up the latter part of the URL for trigging your deploy.
+* **description** (string, recommended) – Some human readable description of the project for display as output of the `deploygoon ls` command.
+* **ipWhitelist** (array of string, recommended) – IPs 
+* **deployActions** (array of objects, required) – The steps of the deploy process described in objects, where each object can take the
+  following parameters:
+  * **name** (string) – The huamn friendly name for the action.
+  * **command** (string) – The program name to execute.
+  * **arguments** (array of string) – Arguments to be passed to the command.
+  * **uid** (number) – The numeric user id to execute the command under.
+  * **gid** (number) – The numeric group id to execute the command under.
+* **notifications** (object, optional) – Notification settings for the deploy process. If omitted, no notifications will occur. If provided
+  use the following format.
+  * **notifier** (string, required) – The name (minus extension) of the [notifier](https://github.com/hacklanta/deploy-goon/tree/master/src/notifiers)
+    to use.
+  * **onSuccess** (boolean, optional) – By default we only notify you on failed deploys. If you'd like success notifications too, set this flag
+    to true.
+  * **settings** (object, required) – The format of this object is specific to the notifier implementation you're using. It will be passed
+    verbatim to the notifier.
 
 After you have this build definition, you can do the following:
 
 ```
-$ sudo deploygoon add my-deploy-job.json
+$ sudo deploygoon add path/to/my-deploy-job.json
 ```
 
 Your deploy job will then be added to the list of jobs Deploy Goon knows about. Now, all that's left is to start up
