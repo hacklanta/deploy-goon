@@ -26,10 +26,15 @@ var DeployGoonConfiguration = (function() {
       if (configurationFile == "")
         return;
 
-      var configurationJson = loadConfigurationJsonFromFile(configurationFile);
+      try {
+        var configurationJson = loadConfigurationJsonFromFile(configurationFile);
 
-      configuredProjects[configurationJson.slug] = new DeployJob(configurationJson);
-      configurationFilePaths[configurationJson.slug] = configurationFile;
+        configuredProjects[configurationJson.slug] = new DeployJob(configurationJson);
+        configurationFilePaths[configurationJson.slug] = configurationFile;
+      } catch (error) {
+        console.error("Error loading configuration from " + configurationFile);
+        console.error(error);
+      }
     });
   }
 
