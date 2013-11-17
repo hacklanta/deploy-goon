@@ -7,8 +7,12 @@ describe('DeployJob', function() {
         "ipWhitelist": ["127.0.0.1"],
         "deployActions": [
           {
-            "name": "Echo Lo",
+            "name": "Command 1",
             "command": "whoami"
+          },
+          {
+            "name": "Command 2",
+            "command": "id"
           }
         ]
       },
@@ -21,7 +25,11 @@ describe('DeployJob', function() {
         "trustProxy": true,
         "deployActions": [
           {
-            "name": "Echo Lo",
+            "name": "Break things",
+            "command": "ewfijwfojwef"
+          },
+          {
+            "name": "I should not run",
             "command": "whoami"
           }
         ]
@@ -75,8 +83,41 @@ describe('DeployJob', function() {
   });
 
   describe("#executeDeployment", function() {
-    it('should execute the deploy actions in the correct order');
+    it('should execute the deploy actions in the correct order', function(done) {
+      var executed = [];
 
-    it('should stop execution when one of the deploy actions exits nonzero');
+      exampleJob.executeDeployment({
+        afterEach: function(_, descriptor) {
+          executed.push(descriptor.name);
+        },
+
+        afterAll: function() {
+          assert.equal(executed.length, 2);
+          assert.equal(executed[0], 'Command 1');
+          assert.equal(executed[1], 'Command 2');
+          done();
+        },
+
+        silenceOutput: true
+      });
+    });
+
+    it('should stop execution when one of the deploy actions exits nonzero', function(done) {
+      var executed = [];
+
+      exampleJobWithProxyTrust.executeDeployment({
+        afterEach: function(_, descriptor) {
+          executed.push(descriptor.name);
+        },
+
+        afterAll: function() {
+          assert.equal(executed.length, 1);
+          assert.equal(executed[0], 'Break things');
+          done();
+        },
+
+        silenceOutput: true
+      });
+    });
   })
 });
