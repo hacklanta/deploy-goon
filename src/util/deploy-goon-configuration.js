@@ -8,9 +8,7 @@ var DeployJob = require('./deploy-job'),
     fs = require('fs');
 
 var DeployGoonConfiguration = (function() {
-  var configuredProjects = {},
-      configurationFilePaths = {},
-      deploygoonConfigFile = "/etc/deploygoon.config";
+  var deploygoonConfigFile = "/etc/deploygoon.config";
 
   function loadConfigurationJsonFromFile(configurationFile) {
     return JSON.parse(fs.readFileSync(configurationFile, {encoding: 'utf8'}));
@@ -18,7 +16,9 @@ var DeployGoonConfiguration = (function() {
 
   function DeployGoonConfiguration(options) {
     var options = options || {},
-        configurationFiles;
+        configurationFiles,
+        configuredProjects = {},
+        configurationFilePaths = {};
 
     if (! options.configurationFiles && ! fs.existsSync(deploygoonConfigFile))
       fs.writeFileSync(deploygoonConfigFile, "");
@@ -42,10 +42,13 @@ var DeployGoonConfiguration = (function() {
         console.error(error);
       }
     });
+
+    this.configuredProjects = configuredProjects;
+    this.configurationFilePaths = configurationFilePaths;
   }
 
   DeployGoonConfiguration.prototype.getJob = function(slug) {
-    return configuredProjects[slug];
+    return this.configuredProjects[slug];
   }
 
   function configurationUpdateHandler(slug, filePath) {
@@ -54,15 +57,15 @@ var DeployGoonConfiguration = (function() {
 
       var updatedConfiguration = loadConfigurationJsonFromFile(filePath);
 
-      configuredProjects[updatedConfiguration.slug] = new DeployJob(updatedConfiguration);
+      this.configuredProjects[updatedConfiguration.slug] = new DeployJob(updatedConfiguration);
 
       if (updatedConfiguration.slug != slug) {
         console.log("Name for " + projectSlug + " has changed to " + updatedConfiguration.slug);
 
-        delete configuredProjects[slug];
-        delete configurationFilePaths[slug];
+        delete this.configuredProjects[slug];
+        delete this.configurationFilePaths[slug];
 
-        configurationFilePaths[updatedConfiguration.slug] = filePath;
+        this.configurationFilePaths[updatedConfiguration.slug] = filePath;
 
         fs.unwatchFile(filePath);
         fs.watchFile(filePath, configurationUpdateHandler(updatedConfiguration.slug, filePath));
@@ -73,25 +76,25 @@ var DeployGoonConfiguration = (function() {
   }
 
   DeployGoonConfiguration.prototype.watchConfiguration = function() {
-    for (projectSlug in configurationFilePaths) {
-      var configurationFilePath = configurationFilePaths[projectSlug];
+    for (projectSlug in this.configurationFilePaths) {
+      var configurationFilePath = this.configurationFilePaths[projectSlug];
       fs.watchFile(configurationFilePath, configurationUpdateHandler(projectSlug, configurationFilePath));
     }
   }
 
   DeployGoonConfiguration.prototype.getJobs = function() {
-    return configuredProjects;
+    return this.configuredProjects;
   }
 
   DeployGoonConfiguration.prototype.getJobFilePaths = function() {
-    return configurationFilePaths;
+    return this.configurationFilePaths;
   }
 
   DeployGoonConfiguration.prototype.addJob = function(filename) {
     filename = fs.realpathSync(filename);
 
-    for (slug in configurationFilePaths) {
-      if (configurationFilePaths[slug] == filename) {
+    for (slug in this.configurationFilePaths) {
+      if (this.configurationFilePaths[slug] == filename) {
         console.error("That file is already configured.");
         return;
       }
@@ -99,30 +102,30 @@ var DeployGoonConfiguration = (function() {
 
     var configuration = loadConfigurationJsonFromFile(filename);
 
-    if (configuredProjects[configuration.slug] !== undefined) {
+    if (this.configuredProjects[configuration.slug] !== undefined) {
       console.error("That configuration uses a slug that is in use by another project.");
       return;
     }
 
-    configuredProjects[configuration.slug] = configuration;
-    configurationFilePaths[configuration.slug] = filename;
+    this.configuredProjects[configuration.slug] = configuration;
+    this.configurationFilePaths[configuration.slug] = filename;
   }
 
   DeployGoonConfiguration.prototype.removeJob = function(slug) {
-    if (configuredProjects[slug] === undefined) {
+    if (this.configuredProjects[slug] === undefined) {
       console.error("That project doesn't exist.");
       return;
     }
 
-    delete configuredProjects[slug];
-    delete configurationFilePaths[slug];
+    delete this.configuredProjects[slug];
+    delete this.configurationFilePaths[slug];
   }
 
   DeployGoonConfiguration.prototype.save = function() {
     var filenames = [];
 
-    for (slug in configurationFilePaths) {
-      filenames.push(configurationFilePaths[slug]);
+    for (slug in this.configurationFilePaths) {
+      filenames.push(this.configurationFilePaths[slug]);
     }
 
     var deployGoonConfigurationContents = filenames.join("\n");
