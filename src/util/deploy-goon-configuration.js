@@ -16,11 +16,17 @@ var DeployGoonConfiguration = (function() {
     return JSON.parse(fs.readFileSync(configurationFile, {encoding: 'utf8'}));
   }
 
-  function DeployGoonConfiguration() {
-    if (! fs.existsSync(deploygoonConfigFile))
+  function DeployGoonConfiguration(options) {
+    var options = options || {},
+        configurationFiles;
+
+    if (! options.configurationFiles && ! fs.existsSync(deploygoonConfigFile))
       fs.writeFileSync(deploygoonConfigFile, "");
 
-    var configurationFiles = fs.readFileSync(deploygoonConfigFile, {encoding: 'utf8'}).split("\n");
+    if (! options.configurationFiles)
+      configurationFiles = fs.readFileSync(deploygoonConfigFile, {encoding: 'utf8'}).split("\n");
+    else
+      configurationFiles = options.configurationFiles;
 
     configurationFiles.forEach(function(configurationFile) {
       if (configurationFile == "")
