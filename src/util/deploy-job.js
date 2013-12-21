@@ -75,7 +75,7 @@ var DeployJob = (function() {
 
   DeployJob.prototype.executeDeployment = function(options) {
     if (this.executing) {
-      console.warn("Deployment of " + slug + " is already in progress.");
+      console.warn("Deployment of " + this.slug + " is already in progress.");
       return;
     }
 
