@@ -114,7 +114,7 @@ var DeployJob = (function() {
           afterAll(false);
         }
 
-        executing = false;
+        this.executing = false;
       };
     }
 
