@@ -7,8 +7,8 @@ var spawn = require('child_process').spawn;
 
 var DeployHelpers = {
   executeCommand: function(actionDescriptor, callback, options) {
-    var spawnOptions = {end: process.env},
-        options = options || {};
+    var options = options || {},
+        spawnOptions = {env: options.env || process.env};
 
     if (actionDescriptor.uid)
       spawnOptions["uid"] = actionDescriptor.uid;
