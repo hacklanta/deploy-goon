@@ -92,8 +92,8 @@ var DeployJob = (function() {
         afterAll = options.afterAll || function() {},
         afterEach = options.afterEach || function() {};
 
-    deployCommandCallback = function(deployCommandIndex) {
-      return function(success) {
+    deployCommandCallback = (function(deployCommandIndex) {
+      return (function(success) {
         afterEach(success, deployJob.deployActions[deployCommandIndex]);
 
         if (success && deployCommandIndex < deployCommandCount - 1) {
@@ -104,23 +104,17 @@ var DeployJob = (function() {
           );
 
           return;
-        } else if (success) {
-          if (! options.silenceOutput)
-            console.log("Deployment of " + deployJob.slug + " is finished.");
-
-          deployJob.notify(true);
-          afterAll(true);
-        } else {
-          if (! options.silenceOutput)
-            console.error("Deployment of " + deployJob.slug + " failed.");
-
-          deployJob.notify(false);
-          afterAll(false);
+        } else if (success && ! options.silenceOutput) {
+          console.log("Deployment of " + deployJob.slug + " is finished.");
+        } else if (! options.silenceOutput) {
+          console.error("Deployment of " + deployJob.slug + " failed.");
         }
 
         this.executing = false;
-      };
-    }
+        deployJob.notify(success);
+        afterAll(success);
+      }).bind(this);
+    }).bind(this);
 
     DeployHelpers.executeCommand(this.deployActions[0], deployCommandCallback(0), options);
   }
