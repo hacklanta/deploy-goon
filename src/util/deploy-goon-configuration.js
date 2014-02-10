@@ -51,24 +51,26 @@ var DeployGoonConfiguration = (function() {
     return this.configuredProjects[slug];
   }
 
-  function configurationUpdateHandler(slug, filePath) {
+  DeployGoonConfiguration.prototype.configurationUpdateHandler = function(slug, filePath) {
+    var self = this;
+
     return function() {
       console.log("Reloading configuration for " + slug);
 
       var updatedConfiguration = loadConfigurationJsonFromFile(filePath);
 
-      this.configuredProjects[updatedConfiguration.slug] = new DeployJob(updatedConfiguration);
+      self.configuredProjects[updatedConfiguration.slug] = new DeployJob(updatedConfiguration);
 
       if (updatedConfiguration.slug != slug) {
         console.log("Name for " + projectSlug + " has changed to " + updatedConfiguration.slug);
 
-        delete this.configuredProjects[slug];
-        delete this.configurationFilePaths[slug];
+        delete self.configuredProjects[slug];
+        delete self.configurationFilePaths[slug];
 
-        this.configurationFilePaths[updatedConfiguration.slug] = filePath;
+        self.configurationFilePaths[updatedConfiguration.slug] = filePath;
 
         fs.unwatchFile(filePath);
-        fs.watchFile(filePath, configurationUpdateHandler(updatedConfiguration.slug, filePath));
+        fs.watchFile(filePath, self.configurationUpdateHandler(updatedConfiguration.slug, filePath));
       }
 
       console.log("Configuration updated.");
