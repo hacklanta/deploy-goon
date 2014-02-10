@@ -34,7 +34,8 @@ describe('DeployJob', function() {
           }
         ]
       },
-      exampleJobWithProxyTrust = new DeployJob(trustProxyJobDescriptor);
+      exampleJobWithProxyTrust = new DeployJob(trustProxyJobDescriptor),
+      exampleJobWithProxyTrust2 = new DeployJob(trustProxyJobDescriptor);
 
   describe('#constructor', function() {
     it('should construct a valid DeployJob for valid input', function() {
@@ -121,6 +122,21 @@ describe('DeployJob', function() {
         afterAll: function() {
           assert.equal(executed.length, 1);
           assert.equal(executed[0], 'Break things');
+          done();
+        },
+
+        silenceOutput: true
+      });
+    });
+
+    it("should correctly manage the executing status of the job", function(done) {
+      exampleJobWithProxyTrust2.executeDeployment({
+        afterEach: function() {
+          assert.equal(exampleJobWithProxyTrust2.getExecuting(), true);
+        },
+
+        afterAll: function() {
+          assert.equal(exampleJobWithProxyTrust2.getExecuting(), false);
           done();
         },
 
