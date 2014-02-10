@@ -78,7 +78,7 @@ var DeployGoonConfiguration = (function() {
   DeployGoonConfiguration.prototype.watchConfiguration = function() {
     for (projectSlug in this.configurationFilePaths) {
       var configurationFilePath = this.configurationFilePaths[projectSlug];
-      fs.watchFile(configurationFilePath, configurationUpdateHandler(projectSlug, configurationFilePath));
+      fs.watchFile(configurationFilePath, this.configurationUpdateHandler(projectSlug, configurationFilePath));
     }
   }
 
