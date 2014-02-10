@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Deploy Goon
  * ©2013 Matt Farmer – Licensed under Apache 2 License
