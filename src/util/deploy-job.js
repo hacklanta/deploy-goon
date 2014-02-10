@@ -50,6 +50,10 @@ var DeployJob = (function() {
     return this.description;
   }
 
+  DeployJob.prototype.getExecuting = function() {
+    return this.executing;
+  }
+
   DeployJob.prototype.isIpWhitelisted = function(ipAddress, xForwardedForIp) {
     if (typeof this.ipWhitelist === 'undefined') {
       // Whitelisting disabled.
