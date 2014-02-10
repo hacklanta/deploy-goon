@@ -15,7 +15,8 @@
   },
   "files": ["src"],
   "bin": {
-    "deploygoon": "./src/cli.js"
+    "deploygoon": "./src/cli.js",
+    "deploygoon-daemon", "./src/daemon.js"
   },
   "engines": {
     "node": "0.10.x"
