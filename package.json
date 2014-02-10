@@ -1,6 +1,6 @@
 {
   "name": "deploy-goon",
-  "version": "1.0.7-SNAPSHOT",
+  "version": "1.0.7",
   "description": "A tool to make configuring deploy triggers easy.",
   "keywords": "deploy-goon deploy goon",
   "homepage": "https://github.com/hacklanta/deploy-goon",
