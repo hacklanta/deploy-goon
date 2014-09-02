@@ -68,6 +68,6 @@ http.createServer(function(req, res) {
     res.writeHead(404);
     res.end();
   }
-}).listen(9090, '127.0.0.1');
+}).listen(9090);
 
 console.log("The Deploy Goon is up on 9090.");
